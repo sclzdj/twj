@@ -1,0 +1,142 @@
+{extend name="$_admin_base_layout" /}
+
+{block name="style"}
+<link href="__LIBS__/jstree/themes/default/style.min.css" rel="stylesheet" />
+{/block}
+
+{block name="content"}
+<div class="alert alert-warning alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <p><strong><i class="fa fa-fw fa-info-circle"></i> 提示：</strong>系统目前只应用<b style="color: #f00000;">&nbsp;{$product_class_level}&nbsp;</b>级分类。</p>
+</div>
+
+<script src="https://cdn.bootcss.com/jquery/1.12.2/jquery.min.js"></script>
+<script src="__LIBS__/bootstrap-datepicker/bootstrap-datepicker.js"></script> 
+
+<style>
+.dj_addtop{
+    display: block;
+    background: #66b6ff;
+    color: #fff;
+    font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+    margin: 10px 0;
+    width: 120px;
+    text-align: center;
+}
+.dj_addtop:hover{
+    color: #fff;
+    opacity: 0.8;
+}
+.dj_box{    
+    display: block;
+    height: 30px;
+    line-height: 30px;
+    margin: 5px 0;
+    padding: 0 1%;
+    color: #5a5a5a;
+    text-decoration: none;
+    font-weight: bold;
+    background: #f9f9f9;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+.dj_box:hover{
+    background: #ececec;
+}
+.dj_box a{ 
+    font-weight: normal;
+    display: none;
+}
+</style>
+<script>
+$(function(){
+    $('.dj_box').mouseover(function(){
+        $(this).find('a').show();
+    });
+    $('.dj_box').mouseleave(function(){
+        $(this).find('a').hide();
+    });
+});
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <div class="block" style="padding: 10px 2%">
+            <a href="{:url('add')}" class="dj_addtop">新增顶级分类</a>
+            {$cates}
+        </div>
+    </div>
+</div>
+  
+
+
+{/block}
+
+{block name="script"}
+<script src="__LIBS__/jstree/jstree.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#jstree').jstree({
+            plugins: ["checkbox", "search"],
+            "checkbox" : {
+                "keep_selected_style" : false,
+                "three_state" : false,
+                "cascade" : 'down+up'
+            },
+            "search" : {
+                'show_only_matches' : true,
+                'show_only_matches_children' : true
+            }
+        });
+
+        var to = false;
+        $('#search-auth').keyup(function () {
+            if(to) { clearTimeout(to); }
+            to = setTimeout(function () {
+                var v = $('#search-auth').val();
+                $('#jstree').jstree(true).search(v);
+            }, 250);
+        });
+        // 全选
+        $('#check-all').click(function () {
+            $('#jstree').jstree(true).check_all();
+        });
+        // 取消全选
+        $('#uncheck-all').click(function () {
+            $('#jstree').jstree(true).uncheck_all();
+        });
+        // 展开所有
+        $('#expand-all').click(function () {
+            $('#jstree').jstree(true).open_all();
+        });
+        // 收起所有
+        $('#collapse-all').click(function () {
+            $('#jstree').jstree(true).close_all();
+        });
+
+        // 提交表单
+        $('#form').submit(function () {
+            var form_data = $(this).serialize();
+            var auth_node = $('#jstree').jstree(true).get_checked();
+            if (auth_node.length) {
+                form_data += '&menu_auth='+auth_node.join(',');
+            }
+            $.post("{:url('')}", form_data).success(function (res) {
+                if (res.code) {
+                    Dolphin.notify(res.msg, 'success');
+                    setTimeout(function () {
+                        location.href = res.url;
+                    }, 1500);
+                } else {
+                    Dolphin.notify(res.msg, 'danger');
+                }
+            }).fail(function () {
+                Dolphin.notify('服务器发生错误~', 'danger');
+            });
+            return false;
+        });
+    });
+</script>
+{/block}

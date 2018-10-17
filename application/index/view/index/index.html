@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <title>测试</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0">
+        <script src="https://cdn.bootcss.com/jquery/1.12.2/jquery.min.js"></script>
+    </head>
+    <body>
+    	<form action=""  method="post" enctype="multipart/form-data" id="myform">
+		<input name="file" type="file" />
+		<!--  <input name="thumb_max_width" type="hidden" value="200" />
+		<input name="thumb_max_height" type="hidden" value="100" />  -->
+		<a class="submit" id="submit">上传</a>
+		</form>
+		<script>
+		$(document).ready(function(){
+        	$('#submit').click(function(){
+        		$.ajax({
+        			type:'GET',
+        			url:'http://adm.gz.sclzdj.cn/public/index.php/index/upload/getUrl',
+        			dataType:'json',
+        			success:function(data){
+        				if(data.errcode==200){
+        					$('#myform').attr('action',data.data.url);
+        					$('#myform').submit();
+        				}
+        			}
+        		});
+        	});
+        });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,819 @@
+{extend name="$_admin_base_layout" /}
+
+{block name="style"}
+<link href="__LIBS__/jstree/themes/default/style.min.css" rel="stylesheet" />
+{/block}
+
+{block name="content"}
+
+<style type="text/css">
+.dj_search{
+    margin:20px 2%;
+    text-align: right;
+    font-size:14px; 
+}
+.dj_search p.line{
+    display: inline-block;
+    height: 26px;
+    line-height: 26px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+.dj_search input,select,.submit{
+    height: 26px;
+    line-height: 26px;
+}
+.dj_search .submit{
+    width: 50px;
+    background: #e0e0e0;
+    border: 1px solid #939393;
+    text-align: center;
+    cursor: pointer;
+}
+.dj_search .submit:hover{
+    opacity: 0.8;
+}
+.dj_search span{
+    display: inline-block;
+    background: #fff;
+}
+.dj_search span a{
+    font-size: 18px;
+    cursor: pointer;
+}
+.dj_box{
+    margin:10px 2%;
+    border: 1px solid #aed8ff;
+}
+.dj_box .top{
+    background: #eaf8ff;
+    color: #3c3c3c;
+    height: 80px;
+}
+.dj_box .top .left{
+    margin:0;
+    width: 40%;
+    padding: 7px 2%;
+    line-height: 22px;
+    float: left;
+}
+.dj_box .top .middle{
+    margin:0;
+    width: 40%;
+    padding: 7px 2%;
+    line-height: 22px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    float: left;
+}
+.dj_box .top .right{
+    margin:0;
+    width: 20%;
+    display:table-cell;      /*按照单元格的样式显示元素*/
+    vertical-align:middle;
+    overflow: hidden;
+    height: 80px;
+}
+.dj_box .top i{
+    font-style: normal;
+}
+.dj_box .under{
+    background: #ffffff;
+    color: #3c3c3c;
+    height: 200px;
+}
+.dj_box .under .left{
+    margin:0;
+    width: 50%;
+    padding: 0;
+    float: left;
+}
+.dj_box .under .left .pic{
+    width: 200px;
+    height: 160px;
+    margin: 20px 2%;
+    float: left;
+}
+.dj_box .under .left .pic img{
+    max-width: 100%;
+    max-height: 100%;
+}
+.dj_box .under .left .con{
+    padding: 25px 2%;
+    padding-left: 0;
+    line-height: 30px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    float: left;
+}
+.dj_box .under .middle{
+    margin:0;
+    width: 30%;
+    line-height: 200px;
+    float: left;
+}
+.dj_box .under .right{
+    margin:0;
+    width: 20%;
+    display:table-cell;      /*按照单元格的样式显示元素*/
+    vertical-align:middle;
+    overflow: hidden;
+    height: 200px;
+}
+.dj_box .under .right p.btn{
+    padding:0;
+    margin:0;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    width: 90px;
+    background: #66b6ff;
+    color: #fff;
+    font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer;
+}
+.dj_box .under .right span.refundmsg{
+    font-size: 12px;
+    color: #f00000;
+    line-height: 16px;
+}
+.dj_box .under i{
+    font-style: normal;
+}
+.dj_page{
+    text-align: center;
+}
+.dj_smallbox{
+    width: 500px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    background: #f2f2f2;
+}
+.dj_smallbox .title{
+    background: #eaf8ff;
+    color: #3c3c3c;
+    height: 60px;
+    line-height: 60px;
+    padding:0 3%;
+    text-align: center;
+    font-weight: bold;  
+    font-size: 16px;
+    letter-spacing: 2px;
+}
+.dj_smallbox .con{
+    background: #fff;
+    color: #3c3c3c;
+    padding:20px 3%;
+    font-weight: 200;  
+    font-size: 14px;
+    text-align: center;
+}
+.dj_smallbox .con label{
+    font-weight: normal; 
+    display: block;
+    line-height: 50px;
+}
+.dj_smallbox .con label input,.dj_smallbox .con label select{
+    font-weight: normal; 
+    line-height: 30px;
+    height: 30px;
+    min-width: 60%;
+    padding:0 2%; 
+    border: 1px solid #aaaaaa;
+}
+.dj_smallbox .con a{
+    display: inline-block;
+    width: 70px;
+    background: #66b6ff;
+    color: #fff;
+    font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer;
+}
+</style>
+
+<script src="https://cdn.bootcss.com/jquery/1.12.2/jquery.min.js"></script>
+<script src="__LIBS__/bootstrap-datepicker/bootstrap-datepicker.js"></script> 
+  
+
+<div class="dj_search">
+    <form action="{:url('index')}" method="get" name="dj_search">
+        {if condition="$search_user_id gt 0"}
+        <p class="line"><span>订单用户：<i>{$search_user_name}</i><a href="javascript:$('#dj_user_id').val('0');dj_search.submit();" id="dj_search_user_id_cancel">&nbsp;×&nbsp;</a></span>&nbsp;&nbsp;&nbsp;</p>
+        {/if}
+        <p class="line">排序&nbsp;<select name="order" class="sese">
+            <option value="a.created_at desc,a.id desc" {if condition="$search_order eq 'a.created_at desc,a.id desc'"}selected="selected"{/if}>订单时间降序</option>
+            <option value="a.created_at asc,a.id desc" {if condition="$search_order eq 'a.created_at asc,a.id desc'"}selected="selected"{/if}>订单时间升序</option>
+        </select>&nbsp;&nbsp;&nbsp;</p>
+        <!-- <p class="line">采购状态&nbsp;<select name="is_purchase">
+            <option value="-1">全部</option>
+            <option value="0">未采购</option>
+            <option value="1">已采购</option>
+        </select>&nbsp;&nbsp;&nbsp;</p> -->
+        <p class="line">订单状态&nbsp;<select name="state" class="sese">
+            <option value="-1" {if condition="$search_state eq '-1'"}selected="selected"{/if}>全部</option>
+           <option value="0" {if condition="$search_state eq '0'"}selected="selected"{/if}>待付款</option>
+           <option value="1" {if condition="$search_state eq '1'"}selected="selected"{/if}>已付款</option>
+           <!-- <option value="2" {if condition="$search_state eq '2'"}selected="selected"{/if}>申请撤单</option> -->
+           <option value="3" {if condition="$search_state eq '3'"}selected="selected"{/if}>已发货</option>
+           <option value="4" {if condition="$search_state eq '4'"}selected="selected"{/if}>货已到店</option> 
+           <option value="5" {if condition="$search_state eq '5'"}selected="selected"{/if}>已收货</option> 
+           <option value="8" {if condition="$search_state eq '8'"}selected="selected"{/if}>交易成功</option> 
+           <option value="9" {if condition="$search_state eq '9'"}selected="selected"{/if}>订单关闭</option> 
+        </select>&nbsp;&nbsp;&nbsp;</p>
+        <p class="line">售后状态&nbsp;<select name="refund_state" class="sese">
+            <option value="-99" {if condition="$search_refund_state eq '-99'"}selected="selected"{/if}>全部</option>
+            <option value="1" {if condition="$search_refund_state eq '1'"}selected="selected"{/if}>申请退款</option> 
+            <option value="2" {if condition="$search_refund_state eq '2'"}selected="selected"{/if}>申请退货</option> 
+            <option value="3" {if condition="$search_refund_state eq '3'"}selected="selected"{/if}>申请换货</option> 
+            <option value="4" {if condition="$search_refund_state eq '4'"}selected="selected"{/if}>同意退款</option> 
+            <option value="5" {if condition="$search_refund_state eq '5'"}selected="selected"{/if}>同意退货</option> 
+            <option value="6" {if condition="$search_refund_state eq '6'"}selected="selected"{/if}>同意换货</option> 
+            <option value="7" {if condition="$search_refund_state eq '7'"}selected="selected"{/if}>退款成功</option> 
+            <option value="8" {if condition="$search_refund_state eq '8'"}selected="selected"{/if}>退货成功</option>
+            <option value="9" {if condition="$search_refund_state eq '9'"}selected="selected"{/if}>换货成功</option>
+            <option value="-1" {if condition="$search_refund_state eq '-1'"}selected="selected"{/if}>已驳回退款申请</option>
+            <option value="-2" {if condition="$search_refund_state eq '-2'"}selected="selected"{/if}>已驳回退货申请</option>
+            <option value="-3" {if condition="$search_refund_state eq '-3'"}selected="selected"{/if}>已驳回换货申请</option>
+            <option value="10" {if condition="$search_refund_state eq '10'"}selected="selected"{/if}>已放弃退货</option>
+            <option value="11" {if condition="$search_refund_state eq '11'"}selected="selected"{/if}>已放弃换货</option>
+        </select>&nbsp;&nbsp;&nbsp;</p>
+        <p class="line">订单时间&nbsp;<input type="text" id="dj_created_start" class="selectData" readonly="readonly" name="created_start" value="{$search_created_start}" placeholder="开始时间" style="width:85px;">~~<input type="text" id="dj_created_end" readonly="readonly" class="selectData" name="created_end" value="{$search_created_end}" placeholder="结束时间" style="width:85px;">&nbsp;&nbsp;&nbsp;</p>
+        <p class="line">关键词&nbsp;<input type="text" name="keywords" value="{$search_keywords}" placeholder="订单号/供应商号/手机号/物流公司" style="width:220px;">&nbsp;&nbsp;&nbsp;
+        <input type="hidden" id="dj_user_id" name="user_id" value="{$search_user_id}">
+        <span onclick="dj_search.submit();" class="submit">搜&nbsp;索</span><p>
+    </form>
+</div>
+{volist name="data_list" id="vo" empty="$empty"}
+<div class="dj_box">
+	<div class="top">
+        <div class=left>
+            <span>订单编号：{$vo.order_sn}</span><br>
+            <span>订单用户：{$vo.user_name}</span><br>
+            <span>订单时间：<i>{$vo.created_at_str}</i></span>
+        </div>
+        <div class="middle">
+            <span>收货人：{$vo.receiver}&nbsp;&nbsp;&nbsp;&nbsp;电话：{$vo.receiver_mobile}</span><br>
+            <span>收货地区：{$vo.receive_address}</span><br>
+            <span>具体地址：{$vo.street}</span>
+        </div>
+        <div class="right">
+            <span>总金额：{$vo.amount}元</span><br>
+            {if condition='$vo["paid_at"] neq 0'}
+            <span>支付时间：<i>{$vo.paid_at_str}</i></span><br>
+            {/if}
+            <span>{$vo.state_str}</span>
+        </div>   
+    </div>
+    <div class="under">
+        <div class=left>
+            <div class="pic">
+                <img src="{$vo.product_picture}" />
+            </div>
+            <div class="con">
+                <!-- 产品名称： -->{$vo.product_name}<br>
+                <!-- 规格说明： -->{$vo.product_size_name}<br>
+                <!-- 购买价格： -->{$vo.product_price}元{if condition="$vo.product_unit neq ''"}/{$vo.product_unit}{/if}<br>
+                <!-- 原供应商： -->供应商编号：{$vo.supplier_serial_num}<br>
+                <!-- 原供应商： -->供应商名称：{$vo.supplier_name}
+            </div>
+        </div>
+        <div class="middle">×{$vo.product_num}</div>
+        <div class="right" id="dj_express_{$vo.id}">
+            {switch name="vo.pix"}
+            {case value="-1"}
+            
+            {/case}
+            {case value="0"}
+            {/case}
+            {case value="1"}
+            <p class="btn" order_id='{$vo.id}' supplier_id='{$vo.supplier_id}' onclick="if(confirm('确定采购吗？')) purchase(this);">采&nbsp;&nbsp;购</p><br>
+            <p class="btn other_suppliers" order_id='{$vo.id}' supplier_id='{$vo.supplier_id}'>其它供应商</p>
+            {/case}
+            {case value="2"}
+            <p class="btn" order_id='{$vo.id}' supplier_id='{$vo.supplier_id}' onclick="if(confirm('确定采购吗？')) purchase(this);">采&nbsp;&nbsp;购</p><br>
+            <p class="btn other_suppliers" order_id='{$vo.id}' supplier_id='{$vo.supplier_id}'>其它供应商</p>
+            {/case}
+            {case value="3"}
+            待供应商备货
+            {/case}
+            {case value="4"}
+            待供应商备货
+            {/case}
+            {case value="5"}
+            供应商已备货
+            {/case}
+            {case value="6"}
+            供应商已备货
+            {/case}
+            {case value="7"}
+            <p class="btn other_suppliers" order_id='{$vo.id}' supplier_id='{$vo.supplier_id}'>其它供应商</p>
+            {/case}
+            {case value="8"}
+            <p class="btn other_suppliers" order_id='{$vo.id}' supplier_id='{$vo.supplier_id}'>其它供应商</p>
+            {/case}
+            {case value="9"}
+            <span class="refundmsg">退款原因：{$vo.refund_msg}</span><br>
+            <p class="btn" order_id='{$vo.id}' onclick="if(confirm('确定同意退款？')) refund(this);">同意退款</p><br>
+            <p class="btn no_refund" order_id='{$vo.id}'>驳回申请</p>
+            {/case}
+            {case value="10"}
+            <span>平台正在退款中</span>
+            {/case}
+            {case value="11"}
+            <span>退款成功</span>
+            {/case}
+            {case value="12"}
+            <span>{$vo.express_name}<br>{$vo.express_sn}</span>
+            {/case}
+            {case value="13"}
+            <span>{$vo.express_name}<br>{$vo.express_sn}</span>
+            {/case}
+            {case value="14"}
+            <span class="refundmsg">退款原因：{$vo.refund_msg}</span><br>
+            <p class="btn" order_id='{$vo.id}' onclick="if(confirm('确定同意退款？')) refund(this);">同意退款</p><br>
+            <p class="btn no_refund" order_id='{$vo.id}'>驳回申请</p>
+            {/case}
+            {case value="15"}
+            <span>平台正在退款中</span>
+            {/case}
+            {case value="16"}
+            <span>退款成功</span>
+            {/case}
+            {case value="17"}
+            <span>{$vo.express_name}<br>{$vo.express_sn}</span>
+            {/case}
+            {case value="18"}
+            <span>{$vo.express_name}<br>{$vo.express_sn}</span>
+            {/case}
+            {case value="19"}
+            <span class="refundmsg">退货原因：{$vo.refund_msg}</span><br>
+            <p class="btn" order_id='{$vo.id}' onclick="if(confirm('确定同意退货？')) refund(this);">同意退货</p><br>
+            <p class="btn no_refund" order_id='{$vo.id}'>驳回申请</p>
+            {/case}
+            {case value="20"}
+                {switch name="vo.refund_product_state"}
+                    {case value="0"}
+                    <span>等待用户发货</span>
+                    {/case}
+                    {case value="1"}
+                    <span>用户已发货</span><br>
+                    <span class="refundmsg">{$vo.refund_express_name}</span><br>
+                    <span class="refundmsg">{$vo.refund_express_sn}</span><br>
+                    <p class="btn" order_id='{$vo.id}' onclick="if(confirm('确定向供应商退货？')) refund_supplier(this);">向供应商退货</p>
+                    {/case}
+                    {case value="2"}
+                    <span>已向供应商退货</span>
+                    {/case}
+                    {case value="3"}
+                    <span>供应商已收到退货</span>
+                    {/case}
+                    {default /}
+                {/switch}
+            {/case}
+            {case value="21"}
+            <span>退货成功</span>
+            {/case}
+            {case value="22"}
+            <span>{$vo.express_name}<br>{$vo.express_sn}</span>
+            {/case}
+            {case value="23"}
+            <span class="refundmsg">换货原因：{$vo.refund_msg}</span><br>
+            <p class="btn" order_id='{$vo.id}'  onclick="if(confirm('确定同意换货？')) refund(this);">同意换货</p><br>
+            <p class="btn no_refund" order_id='{$vo.id}'>驳回申请</p>
+            {/case}
+            {case value="24"}
+                {switch name="vo.refund_product_state"}
+                    {case value="0"}
+                    <span>等待用户发货</span>
+                    {/case}
+                    {case value="1"}
+                    <span>用户已发货</span><br>
+                    <span class="refundmsg">{$vo.refund_express_name}</span><br>
+                    <span class="refundmsg">{$vo.refund_express_sn}</span><br>
+                    <p class="btn" order_id='{$vo.id}' onclick="if(confirm('确定向供应商换货？')) refund_supplier(this);">向供应商换货</p>
+                    {/case}
+                    {case value="2"}
+                    <span>已向供应商换货</span>
+                    {/case}
+                    {case value="3"}
+                    <span>供应商已换货</span><br>
+                    <p class="btn refund_change" order_id='{$vo.id}'>发送换货</p>
+                    {/case}
+                    {case value="4"}
+                    <span>已发送换货</span><br>
+                    <span class="refundmsg">{$vo.barter_express_name}</span><br>
+                    <span class="refundmsg">{$vo.barter_express_sn}</span>
+                    {/case}
+                    {case value="5"}
+                    <span>用户已收到换货</span>
+                    {/case}
+                    {default /}
+                {/switch}
+            {/case}
+            {case value="25"}
+            <span>换货成功</span>
+            {/case}
+            {case value="-1"}
+            <span>用户超时未发货<br>已视为自动放弃</span>
+            {/case}
+            {case value="-2"}
+            <span>用户超时未发货<br>已视为自动放弃</span>
+            {/case}
+            {case value="26"}
+            <span>{$vo.express_name}<br>{$vo.express_sn}</span>
+            {/case}
+            {case value="27"}
+            <span>{$vo.express_name}<br>{$vo.express_sn}</span>
+            {/case}
+            {case value="28"}
+            <span class="refundmsg">退货原因：{$vo.refund_msg}</span><br>
+            <p class="btn" order_id='{$vo.id}' onclick="if(confirm('确定同意退货？')) refund(this);">同意退货</p><br>
+            <p class="btn no_refund" order_id='{$vo.id}'>驳回申请</p>
+            {/case}
+            {case value="29"}
+                {switch name="vo.refund_product_state"}
+                    {case value="0"}
+                    <span>等待用户发货</span>
+                    {/case}
+                    {case value="1"}
+                    <span>用户已发货</span><br>
+                    <span class="refundmsg">{$vo.refund_express_name}</span><br>
+                    <span class="refundmsg">{$vo.refund_express_sn}</span><br>
+                    <p class="btn" order_id='{$vo.id}' onclick="if(confirm('确定向供应商退货？')) refund_supplier(this);">向供应商退货</p>
+                    {/case}
+                    {case value="2"}
+                    <span>已向供应商退货</span>
+                    {/case}
+                    {case value="3"}
+                    <span>供应商已收到退货</span>
+                    {/case}
+                    {default /}
+                {/switch}
+            {/case}
+            {case value="30"}
+            <span>退货成功</span>
+            {/case}
+            {case value="31"}
+            <span>{$vo.express_name}<br>{$vo.express_sn}</span>
+            {/case}
+            {case value="32"}
+            <span class="refundmsg">换货原因：{$vo.refund_msg}</span><br>
+            <p class="btn" order_id='{$vo.id}' onclick="if(confirm('确定同意换货？')) refund(this);">同意换货</p><br>
+            <p class="btn no_refund" order_id='{$vo.id}'>驳回申请</p>
+            {/case}
+            {case value="33"}
+                {switch name="vo.refund_product_state"}
+                    {case value="0"}
+                    <span>等待用户发货</span>
+                    {/case}
+                    {case value="1"}
+                    <span>用户已发货</span><br>
+                    <span class="refundmsg">{$vo.refund_express_name}</span><br>
+                    <span class="refundmsg">{$vo.refund_express_sn}</span><br>
+                    <p class="btn" order_id='{$vo.id}' onclick="if(confirm('确定向供应商换货？')) refund_supplier(this);">向供应商换货</p>
+                    {/case}
+                    {case value="2"}
+                    <span>已向供应商换货</span>
+                    {/case}
+                    {case value="3"}
+                    <span>供应商已换货</span><br>
+                    <p class="btn refund_change" order_id='{$vo.id}'>发送换货</p>
+                    {/case}
+                    {case value="4"}
+                    <span>已发送换货</span><br>
+                    <span class="refundmsg">{$vo.barter_express_name}</span><br>
+                    <span class="refundmsg">{$vo.barter_express_sn}</span>
+                    {/case}
+                    {case value="5"}
+                    <span>用户已收到换货</span>
+                    {/case}
+                    {default /}
+                {/switch}
+            {/case}
+            {case value="34"}
+            <span>换货成功</span>
+            {/case}
+            {case value="-3"}
+            <span>用户超时未发货<br>已视为自动放弃</span>
+            {/case}
+            {case value="-4"}
+            <span>用户超时未发货<br>已视为自动放弃</span>
+            {/case}
+            {case value="35"}
+            <span>{$vo.express_name}<br>{$vo.express_sn}</span>
+            {/case}
+            {case value="36"}
+
+            {/case}
+            {default /}
+        {/switch}
+        </div>
+    </div>
+</div>
+{/volist}
+<div class="dj_page">{$page}</div>
+
+<div style="margin-bottom: 80px;"></div>
+
+<script>
+//直接采购
+function purchase(fn){
+    var order_id=$(fn).attr('order_id');
+    var supplier_id=$(fn).attr('supplier_id');
+    $.ajax({
+        type:'GET',
+        url:'{:url("purchase",[],'')}/id/'+order_id+'/supplier_id/'+supplier_id,
+        dataType:'json',
+        success:function(data){
+            alert(data.msg);
+            if(data.code==200){
+                window.location.reload();
+            }
+        }
+    });
+}
+//直接退款，退货，换货
+function refund(fn){
+    var order_id=$(fn).attr('order_id');
+    $.ajax({
+        type:'GET',
+        url:'{:url("refund",[],'')}/id/'+order_id,
+        dataType:'json',
+        success:function(data){
+            alert(data.msg);
+            if(data.code==200){
+                window.location.reload();
+            }
+        }
+    });
+}
+//向供应商退货，换货
+function refund_supplier(fn){
+    var order_id=$(fn).attr('order_id');
+    $.ajax({
+        type:'GET',
+        url:'{:url("refundsupplier",[],'')}/id/'+order_id,
+        dataType:'json',
+        success:function(data){
+            alert(data.msg);
+            if(data.code==200){
+                window.location.reload();
+            }
+        }
+    });
+}
+
+$(function(){
+    //搜索
+    $('.dj_search select.sese').change(function(){
+        dj_search.submit();
+    });
+    //其它供应商采购
+    $('p.other_suppliers').click(function(){
+        $('#other_suppliers a.submit').attr('order_id',$(this).attr('order_id'));
+        $('#other_suppliers option[value="'+$(this).attr('supplier_id')+'"]').hide();
+        $('#other_suppliers').show();
+    });
+    $('#other_suppliers a.submit').click(function(){
+        var order_id=$(this).attr('order_id');
+        var supplier_id=$('#other_suppliers select[name="supplier_id"] option:selected').val();
+        if(supplier_id==''){
+            alert('请选择供应商');
+            return false;
+        }
+        $.ajax({
+            type:'GET',
+            url:'{:url("purchase",[],'')}/id/'+order_id+'/supplier_id/'+supplier_id,
+            dataType:'json',
+            success:function(data){
+                alert(data.msg);
+                if(data.code==200){
+                    window.location.reload();
+                }
+            }
+        });
+    });
+    $('#other_suppliers a.cancel').click(function(){
+        $('#other_suppliers a.submit').attr('order_id','');
+        $('#other_suppliers option').show();
+        $('#other_suppliers').hide();
+    });
+
+    //驳回退款退货换货申请
+    $('p.no_refund').click(function(){
+        $('#refund_msg a.submit').attr('order_id',$(this).attr('order_id'));
+        $('#refund_msg').show();
+    });
+    $('#refund_msg a.submit').click(function(){
+        var order_id=$(this).attr('order_id');
+        var refund_msg=$('#refund_msg input[name="refund_msg"]').val();
+        $.ajax({
+            type:'POST',
+            url:'{:url("norefund",[],'')}/id/'+order_id,
+            data:{refund_msg:refund_msg},
+            dataType:'json',
+            success:function(data){
+                alert(data.msg);
+                if(data.code==200){
+                    window.location.reload();
+                }
+            }
+        });
+    });
+    $('#refund_msg a.cancel').click(function(){
+        $('#refund_msg a.submit').attr('order_id','');
+        $('#refund_msg').hide();
+    });
+
+    //发送换货
+    $('p.refund_change').click(function(){
+        $('#refund_change a.submit').attr('order_id',$(this).attr('order_id'));
+        $('#refund_change').show();
+    });
+    $('#refund_change a.submit').click(function(){
+        var order_id=$(this).attr('order_id');
+        var barter_express_id=$('#refund_change select[name="barter_express_id"] option:selected').val();
+        var barter_express_sn=$('#refund_change input[name="barter_express_sn"]').val();
+        $.ajax({
+            type:'POST',
+            url:'{:url("refundchange",[],'')}/id/'+order_id,
+            data:{barter_express_id:barter_express_id,barter_express_sn:barter_express_sn},
+            dataType:'json',
+            success:function(data){
+                alert(data.msg);
+                if(data.code==200){
+                    window.location.reload();
+                }
+            }
+        });
+    });
+    $('#refund_change a.cancel').click(function(){
+        $('#refund_change a.submit').attr('order_id','');
+        $('#refund_change').hide();
+    });
+});
+
+//日期插件
+$.fn.datepicker.dates['cn'] = {   //切换为中文显示  
+    days: ["周日", "周一", "周二", "周三", "周四", "周五", "周六", "周日"],  
+            daysShort: ["日", "一", "二", "三", "四", "五", "六", "七"],  
+            daysMin: ["日", "一", "二", "三", "四", "五", "六", "七"],  
+            months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],  
+            monthsShort: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],  
+            today: "今天",  
+            clear: "清除"  
+    };  
+          
+ $('.selectData').datepicker({  
+    autoclose: true, //自动关闭  
+    beforeShowDay: $.noop,    //在显示日期之前调用的函数  
+    calendarWeeks: false,     //是否显示今年是第几周  
+    clearBtn: false,          //显示清除按钮  
+    daysOfWeekDisabled: [],   //星期几不可选  
+    endDate: Infinity,        //日历结束日期  
+    forceParse: true,         //是否强制转换不符合格式的字符串  
+    format: 'yyyy-mm-dd',     //日期格式  
+    keyboardNavigation: true, //是否显示箭头导航  
+    language: 'cn',           //语言  
+    minViewMode: 0,  
+    orientation: "bottom left",      //方向  
+    rtl: false,  
+    startDate: -Infinity,     //日历开始日期  
+    startView: 0,             //开始显示  
+    todayBtn: false,          //今天按钮  
+    todayHighlight: true,    //今天高亮  
+    weekStart: 0              //星期几是开始  
+});     
+
+</script>
+
+
+<div class="dj_bigbox" id="other_suppliers" style="position: fixed;top: 0px;left: 0px;width: 100%;height: 100%;background-color: rgba(0,0,0,0.4);display: none;">      
+    <div class="dj_smallbox">
+        <div class="title">其它供应商</div>
+        <div class="con">
+            <label>供应商：<select name='supplier_id'>
+                <option value="">请选择</option>
+                {volist name="suppliers" id="vo"}
+                <option value="{$vo.id}">{$vo.name}</option>
+                {/volist}
+            <select></label>
+            <div style="margin-top: 20px;"></div>
+            <a href="javascript:;" class='submit' style="margin-right: 40px;" order_id="">确定</a>
+            <a href="javascript:;" class='cancel'>取消</a>
+        </div>
+    </div>
+</div>   
+<div class="dj_bigbox" id="refund_msg" style="position: fixed;top: 0px;left: 0px;width: 100%;height: 100%;background-color: rgba(0,0,0,0.4);display: none;">      
+    <div class="dj_smallbox">
+        <div class="title">驳回申请</div>
+        <div class="con">
+            <label>驳回理由：<input name="refund_msg" value=""></label>
+            <div style="margin-top: 20px;"></div>
+            <a href="javascript:;" class='submit' style="margin-right: 40px;" order_id="">确定</a>
+            <a href="javascript:;" class='cancel'>取消</a>
+        </div>
+    </div>
+</div>   
+
+<div class="dj_bigbox" id="refund_change" style="position: fixed;top: 0px;left: 0px;width: 100%;height: 100%;background-color: rgba(0,0,0,0.4);display: none;">      
+    <div class="dj_smallbox">
+        <div class="title">发送换货</div>
+        <div class="con">
+            <label>物流公司：<select name='barter_express_id'>
+                <option value="">请选择</option>
+                {volist name="expresses" id="vo"}
+                <option value="{$vo.id}">{$vo.name}</option>
+                {/volist}
+            <select></label>
+            <label>物流单号：<input name="barter_express_sn" value=""></label>
+            <div style="margin-top: 20px;"></div>
+            <a href="javascript:;" class='submit' style="margin-right: 40px;" order_id="">确定</a>
+            <a href="javascript:;" class='cancel'>取消</a>
+        </div>
+    </div>
+</div>   
+
+{/block}
+
+{block name="script"}
+<script src="__LIBS__/jstree/jstree.min.js"></script>
+<script src="__LIBS__/jquery-nestable/jquery.nestable.js"></script>
+<script src="__LIBS__/jquery-ui/jquery-ui.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#jstree').jstree({
+            plugins: ["checkbox", "search"],
+            "checkbox" : {
+                "keep_selected_style" : false,
+                "three_state" : false,
+                "cascade" : 'down+up'
+            },
+            "search" : {
+                'show_only_matches' : true,
+                'show_only_matches_children' : true
+            }
+        });
+
+        var to = false;
+        $('#search-auth').keyup(function () {
+            if(to) { clearTimeout(to); }
+            to = setTimeout(function () {
+                var v = $('#search-auth').val();
+                $('#jstree').jstree(true).search(v);
+            }, 250);
+        });
+        // 全选
+        $('#check-all').click(function () {
+            $('#jstree').jstree(true).check_all();
+        });
+        // 取消全选
+        $('#uncheck-all').click(function () {
+            $('#jstree').jstree(true).uncheck_all();
+        });
+        // 展开所有
+        $('#expand-all').click(function () {
+            $('#jstree').jstree(true).open_all();
+        });
+        // 收起所有
+        $('#collapse-all').click(function () {
+            $('#jstree').jstree(true).close_all();
+        });
+
+        // 提交表单
+        $('#form').submit(function () {
+            var form_data = $(this).serialize();
+            var auth_node = $('#jstree').jstree(true).get_checked();
+            if (auth_node.length) {
+                form_data += '&menu_auth='+auth_node.join(',');
+            }
+            $.post("{:url('')}", form_data).success(function (res) {
+                if (res.code) {
+                    Dolphin.notify(res.msg, 'success');
+                    setTimeout(function () {
+                        location.href = res.url;
+                    }, 1500);
+                } else {
+                    Dolphin.notify(res.msg, 'danger');
+                }
+            }).fail(function () {
+                Dolphin.notify('服务器发生错误~', 'danger');
+            });
+            return false;
+        });
+    });
+</script>
+{/block}

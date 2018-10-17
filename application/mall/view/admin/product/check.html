@@ -1,0 +1,304 @@
+{extend name="$_admin_base_layout" /}
+
+{block name="plugins-css"}
+<link href="__LIBS__/jquery-nestable/jquery.nestable.css" rel="stylesheet" type="text/css" />
+{/block}
+
+{block name="content"}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="block">
+                {notempty name="tab_nav"}
+                <ul class="nav nav-tabs">
+                    {volist name="tab_nav['tab_list']" id="tab"}
+                    <li {eq name="tab_nav.curr_tab" value="$key"}class="active"{/eq}>
+                        <a href="{$tab.url}">{$tab.title}</a>
+                    </li>
+                    {/volist}
+                    <li class="pull-right">
+                        <ul class="block-options push-10-t push-10-r">
+                            <li>
+                               <button type="button" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+                            </li>
+                            <li>
+                                <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                {else/}
+                <div class="block-header bg-gray-lighter">
+                    <ul class="block-options">
+                        <li>
+                           <button type="button" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+                        </li>
+                        <li>
+                            <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
+                        </li>
+                    </ul>
+                    <h3 class="block-title">{$page_title}</h3>
+                </div>
+                {/notempty}
+                <div class="block-content tab-content">
+
+                    <style type="text/css">
+                    .dj_search{
+                        margin:20px 2%;
+                        text-align: right;
+                        font-size:14px; 
+                    }
+                    .dj_search p.line{
+                        display: inline-block;
+                        height: 26px;
+                        line-height: 26px;
+                        margin-top: 5px;
+                        margin-bottom: 10px;
+                    }
+                    .dj_search input,select,.submit{
+                        height: 26px;
+                        line-height: 26px;
+                    }
+                    .dj_search .submit{
+                        width: 50px;
+                        background: #e0e0e0;
+                        border: 1px solid #939393;
+                        text-align: center;
+                        cursor: pointer;
+                    }
+                    .dj_search .submit:hover{
+                        opacity: 0.8;
+                    }
+                    .dj_search span{
+                        display: inline-block;
+                        background: #fff;
+                    }
+                    .dj_search span a{
+                        font-size: 18px;
+                        cursor: pointer;
+                    }
+                    .dj_box{
+                        margin:10px 2%;
+                        border: 1px solid #aed8ff;
+                    }
+                    .dj_box .top{
+                        background: #eaf8ff;
+                        color: #3c3c3c;
+                        height: 30px;
+                        padding: 0;
+                    }
+                    .dj_box .top .left{
+                        margin:0;
+                        width: 40%;
+                        padding: 5px 2%;
+                        line-height: 20px;
+                        float: left;
+                    }
+                    .dj_box .top .middle{
+                        margin:0;
+                        width: 40%;
+                        padding: 5px 2%;
+                        line-height: 20px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        float: left;
+                    }
+                    .dj_box .top .right{
+                        margin:0;
+                        width: 20%;
+                        padding: 5px 2%;
+                        line-height: 20px;
+                        float: left;
+                    }
+                    .dj_box .top i{
+                        font-style: normal;
+                    }
+                    .dj_box .under{
+                        background: #ffffff;
+                        color: #3c3c3c;
+                        height: 120px;
+                    }
+                    .dj_box .under .left{
+                        margin:0;
+                        width: 35%;
+                        padding: 0;
+                        float: left;
+                        line-height:20px;
+                    }
+                    .dj_box .under .left .pic{
+                        width: 100px;
+                        height: 100px;
+                        margin: 10px 2%;
+                        float: left;
+                    }
+                    .dj_box .under .left .pic img{
+                        max-width: 100%;
+                        max-height: 100%;
+                    }
+                    .dj_box .under .left .con{
+                        display:table-cell;      /*按照单元格的样式显示元素*/
+                        vertical-align:middle;
+                        overflow: hidden;
+                        height: 120px;
+                    }
+                    .dj_box .under .middle{
+                        margin:0;
+                        padding: 10px 2%;
+                        width: 45%;
+                        float: left;
+                    }
+                    .dj_box .under .middle .l{
+                        margin:0;
+                        width: 30%;
+                        padding: 0 2%;
+                        line-height: 100px;
+                        float: left;
+                    }
+                    .dj_box .under .middle .r{
+                        width: 70%;
+                        overflow: hidden;
+                        height: 100px;
+                    }
+                    .dj_box .under .middle .r .p{
+                        display:table-cell;      /*按照单元格的样式显示元素*/
+                        vertical-align:middle;
+                        overflow: hidden;
+                        height: 100px;
+                    }
+                    .dj_box .under .right{
+                        margin:0;
+                        width: 20%;
+                        padding: 40px 2%;
+                        float: left;
+                    }
+                    .dj_box .under .right p{
+                        width: 100px;
+                        background: #66b6ff;
+                        color: #fff;
+                        font-size: 16px;
+                        height: 40px;
+                        line-height: 40px;
+                        text-align: center;
+                        cursor: pointer;
+                        margin: auto;
+                    }
+                    .dj_box .under i{
+                        font-style: normal;
+                    }
+                    .dj_page{
+                        text-align: center;
+                    }
+
+                    </style>
+
+                    <script src="https://cdn.bootcss.com/jquery/1.12.2/jquery.min.js"></script>
+                    <script src="__LIBS__/bootstrap-datepicker/bootstrap-datepicker.js"></script> 
+                      
+
+                    <div class="dj_search">
+                        <form action="{:url('index',['status'=>'2'])}" method="get" name="dj_search">
+                            {if condition="$search_supplier_id gt 0"}
+                            <p class="line"><span>所属供应商：<i>{$search_supplier_name}</i><a href="javascript:$('#dj_supplier_id').val('0');dj_search.submit();" id="dj_search_user_id_cancel">&nbsp;×&nbsp;</a></span>&nbsp;&nbsp;&nbsp;</p>
+                            {/if}
+                            <p class="line">排序&nbsp;<select name="order">
+                                <option value="created_at desc,id desc" {if condition="$search_order eq 'created_at desc,id desc'"}selected="selected"{/if}>发布时间降序</option>
+                                <option value="created_at asc,id desc" {if condition="$search_order eq 'created_at asc,id desc'"}selected="selected"{/if}>发布时间升序</option>
+                            </select>&nbsp;&nbsp;&nbsp;</p>
+                            <p class="line">订单时间&nbsp;<input type="text" id="dj_created_start" class="selectData" readonly="readonly" name="created_start" value="{$search_created_start}" placeholder="开始时间" style="width:85px;">~~<input type="text" id="dj_created_end" readonly="readonly" class="selectData" name="created_end" value="{$search_created_end}" placeholder="结束时间" style="width:85px;">&nbsp;&nbsp;&nbsp;</p>
+                            <p class="line">商品编号&nbsp;<input type="text" name="sn" value="{$search_sn}" placeholder="请输入编号" style="width:120px;">&nbsp;&nbsp;&nbsp;</p>
+                            <p class="line">商品名称&nbsp;<input type="text" name="keywords" value="{$search_keywords}" placeholder="请输入商品名称" style="width:120px;">&nbsp;&nbsp;&nbsp;
+                            <input type="hidden" id="dj_supplier_id" name="supplier_id" value="{$search_supplier_id}">
+                            <span onclick="dj_search.submit();" class="submit">搜&nbsp;索</span></p>
+                        </form>
+                    </div>
+                    {volist name="data_list" id="vo" empty="$empty"}
+                    <div class="dj_box">
+                        <div class="top">
+                            <div class=left>
+                                <span>商品编号：<i>{$vo.sn}</i></span><br>
+                            </div>
+                            <div class="middle">
+                                <span>供应商：<i>{$vo.supplier_name}</i></span>
+                            </div>
+                            <div class="right">
+                                <span>发布时间：<i>{$vo.created_at_str}</i></span>
+                            </div>   
+                        </div>
+                        <div class="under">
+                            <div class=left>
+                                <div class="pic">
+                                    <img src="{$vo.picture}" />
+                                </div>
+                                <div class="con">
+                                    {$vo.name}
+                                </div>
+                            </div>
+                            <div class="middle">
+                                <div class="l">分类：{$vo.product_type_name}</div>
+                                <div class="r"><div class="p">供应价格：</div><div class="p">{$vo.product_size_str}</div></div>
+                            </div>
+                            <div class="right">
+                                <p class="audit" onclick="location.href='{:url('audit',['id'=>$vo['id']])}'">审&nbsp;&nbsp;核</p>
+                            </div>
+                        </div>
+                    </div>
+                    {/volist}
+                    <div class="dj_page">{$page}</div>
+
+                    <div style="margin-bottom: 80px;"></div>
+
+                    <script>
+
+                    $.fn.datepicker.dates['cn'] = {   //切换为中文显示  
+                        days: ["周日", "周一", "周二", "周三", "周四", "周五", "周六", "周日"],  
+                                daysShort: ["日", "一", "二", "三", "四", "五", "六", "七"],  
+                                daysMin: ["日", "一", "二", "三", "四", "五", "六", "七"],  
+                                months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],  
+                                monthsShort: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],  
+                                today: "今天",  
+                                clear: "清除"  
+                        };  
+                              
+                     $('.selectData').datepicker({  
+                        autoclose: true, //自动关闭  
+                        beforeShowDay: $.noop,    //在显示日期之前调用的函数  
+                        calendarWeeks: false,     //是否显示今年是第几周  
+                        clearBtn: false,          //显示清除按钮  
+                        daysOfWeekDisabled: [],   //星期几不可选  
+                        endDate: Infinity,        //日历结束日期  
+                        forceParse: true,         //是否强制转换不符合格式的字符串  
+                        format: 'yyyy-mm-dd',     //日期格式  
+                        keyboardNavigation: true, //是否显示箭头导航  
+                        language: 'cn',           //语言  
+                        minViewMode: 0,  
+                        orientation: "bottom left",      //方向  
+                        rtl: false,  
+                        startDate: -Infinity,     //日历开始日期  
+                        startView: 0,             //开始显示  
+                        todayBtn: false,          //今天按钮  
+                        todayHighlight: true,    //今天高亮  
+                        weekStart: 0              //星期几是开始  
+                    });     
+
+                    </script>
+
+
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+{/block}
+
+{block name="script"}
+<script src="__LIBS__/jquery-nestable/jquery.nestable.js"></script>
+<script src="__LIBS__/jquery-ui/jquery-ui.min.js"></script>
+<script>
+$(document).ready(function(){
+   
+});
+</script>
+{/block}
+

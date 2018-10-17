@@ -1,0 +1,356 @@
+{extend name="$_admin_base_layout" /}
+
+{block name="plugins-css"}
+<link href="__LIBS__/jquery-nestable/jquery.nestable.css" rel="stylesheet" type="text/css" />
+{/block}
+
+{block name="content"}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="block">
+                {notempty name="tab_nav"}
+                <ul class="nav nav-tabs">
+                    {volist name="tab_nav['tab_list']" id="tab"}
+                    <li {eq name="tab_nav.curr_tab" value="$key"}class="active"{/eq}>
+                        <a href="{$tab.url}">{$tab.title}</a>
+                    </li>
+                    {/volist}
+                    <li class="pull-right">
+                        <ul class="block-options push-10-t push-10-r">
+                            <li>
+                               <button type="button" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+                            </li>
+                            <li>
+                                <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                {else/}
+                <div class="block-header bg-gray-lighter">
+                    <ul class="block-options">
+                        <li>
+                           <button type="button" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+                        </li>
+                        <li>
+                            <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
+                        </li>
+                    </ul>
+                    <h3 class="block-title">{$page_title}</h3>
+                </div>
+                {/notempty}
+                <div class="block-content tab-content">
+
+                    <style type="text/css">
+                    .dj_search{
+                        margin:20px 2%;
+                        text-align: right;
+                        font-size:14px; 
+                    }
+                    .dj_search input,select,.submit{
+                        height: 26px;
+                        line-height: 26px;
+                    }
+                    .dj_search .submit{
+                        width: 50px;
+                        background: #e0e0e0;
+                        border: 1px solid #939393;
+                        text-align: center;
+                        cursor: pointer;
+                    }
+                    .dj_search .submit:hover{
+                        opacity: 0.8;
+                    }
+                    .dj_search span{
+                        display: inline-block;
+                        background: #fff;
+                    }
+                    .dj_search span a{
+                        font-size: 18px;
+                        cursor: pointer;
+                    }
+                    .dj_box{
+                        margin:10px 2%;
+                        border: 1px solid #aed8ff;
+                    }
+                    .dj_box .top{
+                        background: #eaf8ff;
+                        color: #3c3c3c;
+                        height: 30px;
+                        padding: 0;
+                    }
+                    .dj_box .top .left{
+                        margin:0;
+                        width: 60%;
+                        padding: 5px 2%;
+                        line-height: 20px;
+                        float: left;
+                    }
+                    .dj_box .top .right{
+                        margin:0;
+                        width: 40%;
+                        padding: 5px 2%;
+                        line-height: 20px;
+                        float: left;
+                        text-align: right;
+                    }
+                    .dj_box .top i{
+                        font-style: normal;
+                    }
+                    .dj_box .under{
+                        background: #ffffff;
+                        color: #3c3c3c;
+                        height: 120px;
+                        line-height:20px;
+                    }
+                    .dj_box .under .left{
+                        margin:0;
+                        width: 40%;
+                        padding: 0;
+                        float: left;
+                        line-height:20px;
+                    }
+                    .dj_box .under .left .pic{
+                        width: 100px;
+                        height: 100px;
+                        margin: 10px 2%;
+                        float: left;
+                    }
+                    .dj_box .under .left .pic img{
+                        max-width: 100%;
+                        max-height: 100%;
+                    }
+                    .dj_box .under .left .con{
+                        display:table-cell;      /*按照单元格的样式显示元素*/
+                        vertical-align:middle;
+                        overflow: hidden;
+                        height: 120px;
+                    }
+                    .dj_box .under .middle{
+                        width: 25%;
+                        float: left;
+                        line-height: 20px;
+                    }
+                    .dj_box .under .middle .p{
+                        display:table-cell;      /*按照单元格的样式显示元素*/
+                        vertical-align:middle;
+                        overflow: hidden;
+                        height: 120px;
+                    }
+                    .dj_box .under .right{
+                        width: 35%;
+                        float: left;
+                        line-height: 20px;
+                    }
+                    .dj_box .under .right .p{
+                        display:table-cell;      /*按照单元格的样式显示元素*/
+                        vertical-align:middle;
+                        overflow: hidden;
+                        height: 120px;
+                    }
+                    .dj_box .under i{
+                        font-style: normal;
+                    }
+
+                    #dj_smallbox{
+                        border: 1px solid #aed8ff;
+                        width: 60%;
+                        background: #f2f2f2;
+                        margin: 30px auto;
+                    }
+                    #dj_smallbox .title{
+                        background: #eaf8ff;
+                        color: #3c3c3c;
+                        height: 60px;
+                        line-height: 60px;
+                        padding:0 3%;
+                        text-align: center;
+                        font-weight: bold;  
+                        font-size: 16px;
+                        letter-spacing: 2px;
+                    }
+                    #dj_smallbox .con{
+                        background: #fff;
+                        color: #3c3c3c;
+                        padding:20px 3%;
+                        font-weight: 200;  
+                        font-size: 14px;
+                        text-align: center;
+                    }
+                    #dj_smallbox .con table{
+                        width: 90%;
+                        margin: 0 auto;
+                        font-size: 14px;
+                    }
+                    #dj_smallbox .con table tr td{
+                        height: 60px;
+                        line-height: 60px;
+                    }
+                    #dj_smallbox .con table tr.o td{
+                        height: 40px;
+                        line-height: 40px;
+                    }
+                    #dj_smallbox .con table tr td label{
+                        font-size: 16px;
+                        cursor: pointer;
+                    }
+                    #dj_smallbox .con table tr td input[type="radio"]{
+                        width: 14px;
+                        height: 14px;
+
+                    }
+                    #dj_smallbox .con table tr td input[type="text"]{
+                        height: 40px;
+                        line-height: 40px;
+                        padding: 5px;
+                    }
+                    #dj_smallbox .con table tr td select{
+                        height: 40px;
+                        line-height: 40px;
+                        padding: 5px;
+                    }
+                    #dj_smallbox .con a{
+                        display: inline-block;
+                        width: 80px;
+                        background: #66b6ff;
+                        color: #fff;
+                        font-size: 14px;
+                        height: 30px;
+                        line-height: 30px;
+                        text-align: center;
+                        cursor: pointer;
+                    }
+                    </style>
+
+                    <script src="https://cdn.bootcss.com/jquery/1.12.2/jquery.min.js"></script>
+                      
+                    
+                    <div class="dj_box">
+                        <div class="top">
+                            <div class=left>
+                                <span>商品编号：<i>{$product.sn}</i></span><br>
+                            </div>
+                            <div class="right">
+                                <span>发布时间：<i>{$product.created_at_str}</i></span>
+                            </div>   
+                        </div>
+                        <div class="under">
+                            <div class=left>
+                                <div class="pic">
+                                    <img src="{$product.picture}" />
+                                </div>
+                                <div class="con">
+                                    {$product.name}
+                                </div>
+                            </div>
+                            <div class="middle">
+                                <div class="p">分类：{$product.product_type_name}</div>
+                            </div>
+                            <div class="right">
+                                <div class="p">供应商：{$product.supplier_name}</div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="dj_smallbox">
+                        <div class="title">开&nbsp;始&nbsp;修&nbsp;改</div>
+                        <form id="dj_form">
+                        <div class="con">
+                            <table>
+                                <tr class="s1">
+                                    <td width="25%" align="right">产品分类：&nbsp;</td>
+                                    <td colspan="3" width="75%" align="left">
+                                        &nbsp;<select name="product_type_id" style="width: 80%;">
+                                            {volist  name="cates" id="vo"}
+                                            <option value="{$key}" {if condition="$product['product_type_id'] eq $key"}selected="selected"{/if}>{$vo}</option>
+                                            {/volist}
+                                        </select>
+                                    </td>
+                                </tr>
+                                {if condition="$is_sizes eq 1"}
+                                {volist  name="sizes" id="vo"}
+                                <tr style="height: 10px;" class="s1"></tr>
+                                <tr class='o s1'>
+                                    <td width="25%" align="right">产品规格：&nbsp;</td>
+                                    <td width="20%" align="left">&nbsp;{$vo.name}</td>
+                                    <td width="25%" align="right">供应价格：&nbsp;</td>
+                                    <td width="30%" align="left">&nbsp;{$vo.price_supply}元</td>
+                                </tr>
+                                <tr class='o s1'>
+                                    <td width="25%" align="right">公开价格：&nbsp;</td>
+                                    <td colspan="3" width="75%" align="left">&nbsp;<input name='price_size_{$vo.id}' type="text" value='{$vo.price_sale}' placeholder="请输入公开价格，单位：元" style="width: 80%;"></td>
+                                </tr>
+                                <tr style="height: 10px;" class="s1"></tr>
+                                {/volist}
+                                {else/}
+                                <tr class="s1">
+                                    <td width="25%" align="right">供应价格：&nbsp;</td>
+                                    <td colspan="3" width="75%" align="left">&nbsp;&nbsp;{$product.price_supply}元</td>
+                                </tr>
+                                <tr class="s1">
+                                    <td width="25%" align="right">公开价格：&nbsp;</td>
+                                    <td colspan="3" width="75%" align="left">&nbsp;<input name='price_sale' type="text" value='{$product.price_sale}' placeholder="请输入公开价格，单位：元" style="width: 80%;"></td>
+                                </tr>
+                                {/if}
+                            </table>
+                            <input name='id' type="hidden" value='{$product.id}'>
+                            <input name='is_sizes' type="hidden" value='{$is_sizes}'>
+                            <div style="margin-top: 20px;"></div>
+                            <a href="javascript:;" class='submit' style="margin-right: 80px;">确&nbsp;定</a>
+                            <a href="javascript:;" class='cancel' onclick="history.go(-1);">返&nbsp;回</a>
+                        </div>
+                        </form>
+                    </div>
+    
+
+                    <div style="margin-bottom: 80px;"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{/block}
+
+{block name="script"}
+<script src="__LIBS__/jquery-nestable/jquery.nestable.js"></script>
+<script src="__LIBS__/jquery-ui/jquery-ui.min.js"></script>
+<script>
+$.fn.serializeObject = function()
+{
+  var o = {};
+  var a = this.serializeArray();
+  $.each(a, function() {
+    if (o[this.name]) {
+      if (!o[this.name].push) {
+        o[this.name] = [o[this.name]];
+      }
+      o[this.name].push(this.value || '');
+    } else {
+      o[this.name] = this.value || '';
+    }
+  });
+  return o;
+};
+$(document).ready(function(){
+    $('#dj_smallbox .con a.submit').click(function(){
+        var formData=$('#dj_form').serializeObject();
+        $.ajax({
+            type:'POST',
+            url:'{:url('edit')}',
+            data:formData,
+            dataType:'json',
+            success:function(data){
+                alert(data.msg);
+                if(data.code==200){
+                    location.href='{:url('index',[],'',false)}/status/'+data.status;
+                }
+            }
+        });
+    });
+});
+</script>
+{/block}
+

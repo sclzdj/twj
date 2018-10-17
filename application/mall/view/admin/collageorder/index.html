@@ -1,0 +1,469 @@
+{extend name="$_admin_base_layout" /}
+
+{block name="style"}
+<link href="__LIBS__/jstree/themes/default/style.min.css" rel="stylesheet" />
+{/block}
+
+{block name="content"}
+
+<style type="text/css">
+.dj_search{
+    margin:20px 2%;
+    text-align: right;
+    font-size:14px; 
+}
+.dj_search p.line{
+    display: inline-block;
+    height: 26px;
+    line-height: 26px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+.dj_search input,select,.submit{
+    height: 26px;
+    line-height: 26px;
+}
+.dj_search .submit{
+    width: 50px;
+    background: #e0e0e0;
+    border: 1px solid #939393;
+    text-align: center;
+    cursor: pointer;
+}
+.dj_search .submit:hover{
+    opacity: 0.8;
+}
+.dj_search span{
+    display: inline-block;
+    background: #fff;
+}
+.dj_search span a{
+    font-size: 18px;
+    cursor: pointer;
+}
+.dj_box{
+    margin:10px 2%;
+    border: 1px solid #aed8ff;
+}
+.dj_box .top{
+    background: #eaf8ff;
+    color: #3c3c3c;
+    height: 80px;
+}
+.dj_box .top .left{
+    margin:0;
+    width: 40%;
+    padding: 7px 2%;
+    line-height: 22px;
+    float: left;
+}
+.dj_box .top .middle{
+    margin:0;
+    width: 40%;
+    padding: 7px 2%;
+    line-height: 22px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    float: left;
+}
+.dj_box .top .right{
+    margin:0;
+    width: 20%;
+    display:table-cell;      /*按照单元格的样式显示元素*/
+    vertical-align:middle;
+    overflow: hidden;
+    height: 80px;
+}
+.dj_box .top i{
+    font-style: normal;
+}
+.dj_box .under{
+    background: #ffffff;
+    color: #3c3c3c;
+    height: 200px;
+}
+.dj_box .under .left{
+    margin:0;
+    width: 50%;
+    padding: 0;
+    float: left;
+}
+.dj_box .under .left .pic{
+    width: 200px;
+    height: 160px;
+    margin: 20px 2%;
+    float: left;
+}
+.dj_box .under .left .pic img{
+    max-width: 100%;
+    max-height: 100%;
+}
+.dj_box .under .left .con{
+    padding: 25px 2%;
+    padding-left: 0;
+    line-height: 30px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    float: left;
+}
+.dj_box .under .middle{
+    margin:0;
+    width: 30%;
+    line-height: 200px;
+    float: left;
+}
+.dj_box .under .right{
+    margin:0;
+    width: 20%;
+    padding: 40px 2%;
+    line-height: 40px;
+    float: left;
+}
+.dj_box .under .right p{
+    width: 100px;
+    background: #66b6ff;
+    color: #fff;
+    font-size: 16px;
+    margin-top: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    cursor: pointer;
+}
+.dj_box .under i{
+    font-style: normal;
+}
+.dj_page{
+    text-align: center;
+}
+#dj_smallbox{
+    width: 500px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    background: #f2f2f2;
+}
+#dj_smallbox .title{
+    background: #eaf8ff;
+    color: #3c3c3c;
+    height: 60px;
+    line-height: 60px;
+    padding:0 3%;
+    text-align: center;
+    font-weight: bold;  
+    font-size: 16px;
+    letter-spacing: 2px;
+}
+#dj_smallbox .con{
+    background: #fff;
+    color: #3c3c3c;
+    padding:20px 3%;
+    font-weight: 200;  
+    font-size: 14px;
+    text-align: center;
+}
+#dj_smallbox .con label{
+    font-weight: normal; 
+    display: block;
+    line-height: 50px;
+}
+#dj_smallbox .con label input,#dj_smallbox .con label select{
+    font-weight: normal; 
+    line-height: 30px;
+    height: 30px;
+    width: 60%;
+    padding:0 2%; 
+    border: none;
+    background: #d1d1d1;
+    color: #000;
+}
+#dj_smallbox .con a{
+    display: inline-block;
+    width: 70px;
+    background: #66b6ff;
+    color: #fff;
+    font-size: 14px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer;
+}
+</style>
+
+<script src="https://cdn.bootcss.com/jquery/1.12.2/jquery.min.js"></script>
+<script src="__LIBS__/bootstrap-datepicker/bootstrap-datepicker.js"></script> 
+  
+
+<div class="dj_search">
+    <form action="{:url('index')}" method="get" name="dj_search">
+        {if condition="$search_user_id gt 0"}
+        <p class="line"><span>订单用户：<i>{$search_user_name}</i><a href="javascript:$('#dj_user_id').val('0');dj_search.submit();" id="dj_search_user_id_cancel">&nbsp;×&nbsp;</a></span>&nbsp;&nbsp;&nbsp;</p>
+        {/if}
+        {if condition="$search_collage_product_id gt 0"}
+        <p class="line"><span>拼单产品：<i>{$search_collage_product_title}</i><a href="javascript:$('#dj_collage_product_id').val('0');dj_search.submit();" id="dj_search_collage_product_id_cancel">&nbsp;×&nbsp;</a></span>&nbsp;&nbsp;&nbsp;</p>
+        {/if}
+        <p class="line">排序&nbsp;<select name="order" class="sese">
+            <option value="created_at desc,id desc" {if condition="$search_order eq 'created_at desc,id desc'"}selected="selected"{/if}>订单时间降序</option>
+            <option value="created_at asc,id desc" {if condition="$search_order eq 'created_at asc,id desc'"}selected="selected"{/if}>订单时间升序</option>
+        </select>&nbsp;&nbsp;&nbsp;</p>
+        <p class="line">订单状态&nbsp;<select name="state" class="sese">
+            <option value="-1" {if condition="$search_state eq '-1'"}selected="selected"{/if}>全部</option>
+            <option value="0" {if condition="$search_state eq '0'"}selected="selected"{/if}>待付款</option>
+            <option value="1" {if condition="$search_state eq '1'"}selected="selected"{/if}>进行中</option>
+            <option value="2" {if condition="$search_state eq '2'"}selected="selected"{/if}>拼单成功</option>
+            <option value="3" {if condition="$search_state eq '3'"}selected="selected"{/if}>拼单失败</option>
+            <option value="4" {if condition="$search_state eq '4'"}selected="selected"{/if}>已退款</option>
+            <option value="5" {if condition="$search_state eq '5'"}selected="selected"{/if}>已购买</option>
+        </select>&nbsp;&nbsp;&nbsp;</p>
+        <p class="line">发货状态&nbsp;<select name="deliver_state" class="sese">
+            <option value="-1" {if condition="$search_deliver_state eq '-1'"}selected="selected"{/if}>全部</option>
+            <option value="0" {if condition="$search_deliver_state eq '0'"}selected="selected"{/if}>未发货</option>
+            <option value="1" {if condition="$search_deliver_state eq '1'"}selected="selected"{/if}>已发货</option>
+            <option value="2" {if condition="$search_deliver_state eq '1'"}selected="selected"{/if}>货已到店</option>
+            <option value="3" {if condition="$search_deliver_state eq '1'"}selected="selected"{/if}>已确认收货</option>
+        </select>&nbsp;&nbsp;&nbsp;</p>
+        <p class="line">订单时间&nbsp;<input type="text" id="dj_created_start" class="selectData" readonly="readonly" name="created_start" value="{$search_created_start}" placeholder="开始时间" style="width:85px;">~~<input type="text" id="dj_created_end" readonly="readonly" class="selectData" name="created_end" value="{$search_created_end}" placeholder="结束时间" style="width:85px;">&nbsp;&nbsp;&nbsp;</p>
+        <p class="line">订单编号&nbsp;<input type="text" name="keywords" value="{$search_keywords}" placeholder="请输入订单编号" style="width:105px;">&nbsp;&nbsp;&nbsp;
+        <input type="hidden" id="dj_user_id" name="user_id" value="{$search_user_id}">
+        <input type="hidden" id="dj_collage_product_id" name="collage_product_id" value="{$search_collage_product_id}">
+        <span onclick="dj_search.submit();" class="submit">搜&nbsp;索</span></p>
+    </form>
+</div>
+{volist name="data_list" id="vo" empty="$empty"}
+<div class="dj_box">
+	<div class="top">
+        <div class=left>
+            <span>订单编号：<i>{$vo.sn}</i></span><br>
+            <span>订单用户：<i>{$vo.username}</i></span><br>
+            <span>订单时间：<i>{$vo.created_at_str}</i></span>
+        </div>
+        <div class="middle">
+            <span>收货人：<i>{$vo.receiver}</i>&nbsp;&nbsp;&nbsp;&nbsp;电话：<i>{$vo.receive_mobile}</i></span><br>
+            <span>收货地区：<i>{$vo.receive_address}</i></span><br>
+            <span>具体地址：<i>{$vo.street}</i></span>
+        </div>
+        <div class="right">
+            <span>订单状态：<i>{$vo.state_str}</i></span><br>
+            {if condition='$vo["paid_at"] neq 0'}
+            <span>支付时间：<i>{$vo.paid_at_str}</i></span><br>
+            {/if}
+            <span>总金额：<i>{$vo.amount}</i>元</span>
+        </div>   
+    </div>
+    <div class="under">
+        <div class=left>
+            <div class="pic">
+                <img src="{$vo.collage_product_pic}" />
+            </div>
+            <div class="con">
+                <!-- 产品名称： -->{$vo.collage_product_title}<br>
+                <!-- 规格描述： -->{$vo.collage_product_spec}<br>
+                <!-- 产品尺寸： -->{$vo.collage_product_size}<br>
+                拼单价格：{$vo.collage_price}元/件<br>
+                购买价格：{$vo.price}元/件
+            </div>
+        </div>
+        <div class="middle">×{$vo.num}</div>
+        <div class="right" id="dj_express_{$vo.id}">
+            {switch name="vo.deliver_status"}
+            {case value="0"}
+            <p class="show_box" express_sn='' express_id='' express_order_id='{$vo.id}' express_action='deliver'>发&nbsp;&nbsp;货</p>
+            {/case}
+            {case value="1"}
+            <span>发货状态：<i>{$vo.deliver_str}</i><!-- &nbsp;&nbsp;<a href="javascript:;" class="show_box" express_sn='{$vo.express_sn}' express_id='{$vo.express_id}' express_order_id='{$vo.id}' express_action='edit'>修改信息</a></span><br> -->
+            <span>物流公司：<i>{$vo.express_company}</i></span><br>
+            <span>物流单号：<i>{$vo.express_sn}</i></span>
+            {/case}
+            {default /}
+        {/switch}
+        </div>
+    </div>
+</div>
+{/volist}
+<div class="dj_page">{$page}</div>
+
+<div style="margin-bottom: 80px;"></div>
+
+<script>
+
+$.fn.datepicker.dates['cn'] = {   //切换为中文显示  
+    days: ["周日", "周一", "周二", "周三", "周四", "周五", "周六", "周日"],  
+            daysShort: ["日", "一", "二", "三", "四", "五", "六", "七"],  
+            daysMin: ["日", "一", "二", "三", "四", "五", "六", "七"],  
+            months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],  
+            monthsShort: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],  
+            today: "今天",  
+            clear: "清除"  
+    };  
+          
+ $('.selectData').datepicker({  
+    autoclose: true, //自动关闭  
+    beforeShowDay: $.noop,    //在显示日期之前调用的函数  
+    calendarWeeks: false,     //是否显示今年是第几周  
+    clearBtn: false,          //显示清除按钮  
+    daysOfWeekDisabled: [],   //星期几不可选  
+    endDate: Infinity,        //日历结束日期  
+    forceParse: true,         //是否强制转换不符合格式的字符串  
+    format: 'yyyy-mm-dd',     //日期格式  
+    keyboardNavigation: true, //是否显示箭头导航  
+    language: 'cn',           //语言  
+    minViewMode: 0,  
+    orientation: "bottom left",      //方向  
+    rtl: false,  
+    startDate: -Infinity,     //日历开始日期  
+    startView: 0,             //开始显示  
+    todayBtn: false,          //今天按钮  
+    todayHighlight: true,    //今天高亮  
+    weekStart: 0              //星期几是开始  
+});     
+
+</script>
+
+
+<script>
+$(function(){
+
+    //搜索
+    $('.dj_search select.sese').change(function(){
+        dj_search.submit();
+    });
+  
+    $('#dj_smallbox .submit').click(function(){
+        var express_id=$('#express_id option:selected').val();
+        var express_sn=$.trim($('#express_sn').val());
+        var express_order_id=$.trim($('#express_order_id').val());
+        var express_action=$.trim($('#express_action').val());
+        $.ajax({
+            type:'post',
+            url:'{:url('deliver',[],'')}/action/'+express_action,
+            data:{'express_sn':express_sn,'express_id':express_id,'id':express_order_id},
+            dataType:'json',
+            success:function(data){
+                alert(data.msg);
+                if(data.code==200){
+                    window.location.reload();
+                }
+            }
+        });
+    });
+    $('.dj_box .under .right .show_box').click(function(){
+        $("#express_id").val($(this).attr('express_id'));
+        $('#express_sn').val($(this).attr('express_sn'));
+        $('#express_order_id').val($(this).attr('express_order_id'));
+        $('#express_action').val($(this).attr('express_action'));
+        $('#dj_bigbox').show();
+    });
+    $('#dj_smallbox .cancel').click(function(){
+        $('#express_id').find('option').removeAttr('selected');
+        $('#express_sn').val('');
+        $('#express_order_id').val('');
+        $('#express_action').val('');
+        $('#dj_bigbox').hide();
+    });
+   /* $('#dj_bigbox').click(function(){
+        $('#express_id').find('option').removeAttr('selected');
+        $('#express_sn').val('');
+        $('#express_order_id').val('');
+        $('#express_action').val('');
+        $(this).hide();
+    });
+    $('#dj_smallbox').click(function(){
+        return false;
+    });*/
+});
+</script>
+
+<div id="dj_bigbox" style="position: fixed;top: 0px;left: 0px;width: 100%;height: 100%;background-color: rgba(0,0,0,0.4);display: none;">      
+    <div id="dj_smallbox">
+        <div class="title">编辑物流信息</div>
+        <div class="con">
+            <label>物流公司：<select id='express_id'>
+                <option value="">请选择</option>
+                {volist name="expresses" id="vo"}
+                <option value="{$vo.id}">{$vo.name}</option>
+                {/volist}
+            <select></label>
+            <label>物流单号：<input id='express_sn' type="text" value=''></label>
+            <input id='express_order_id' type="hidden" value=''>
+            <input id='express_action' type="hidden" value=''>
+            <div style="margin-top: 20px;"></div>
+            <a href="javascript:;" class='submit' style="margin-right: 40px;">确定</a>
+            <a href="javascript:;" class='cancel'>取消</a>
+        </div>
+    </div>
+</div>   
+{/block}
+
+{block name="script"}
+<script src="__LIBS__/jstree/jstree.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#jstree').jstree({
+            plugins: ["checkbox", "search"],
+            "checkbox" : {
+                "keep_selected_style" : false,
+                "three_state" : false,
+                "cascade" : 'down+up'
+            },
+            "search" : {
+                'show_only_matches' : true,
+                'show_only_matches_children' : true
+            }
+        });
+
+        var to = false;
+        $('#search-auth').keyup(function () {
+            if(to) { clearTimeout(to); }
+            to = setTimeout(function () {
+                var v = $('#search-auth').val();
+                $('#jstree').jstree(true).search(v);
+            }, 250);
+        });
+        // 全选
+        $('#check-all').click(function () {
+            $('#jstree').jstree(true).check_all();
+        });
+        // 取消全选
+        $('#uncheck-all').click(function () {
+            $('#jstree').jstree(true).uncheck_all();
+        });
+        // 展开所有
+        $('#expand-all').click(function () {
+            $('#jstree').jstree(true).open_all();
+        });
+        // 收起所有
+        $('#collapse-all').click(function () {
+            $('#jstree').jstree(true).close_all();
+        });
+
+        // 提交表单
+        $('#form').submit(function () {
+            var form_data = $(this).serialize();
+            var auth_node = $('#jstree').jstree(true).get_checked();
+            if (auth_node.length) {
+                form_data += '&menu_auth='+auth_node.join(',');
+            }
+            $.post("{:url('')}", form_data).success(function (res) {
+                if (res.code) {
+                    Dolphin.notify(res.msg, 'success');
+                    setTimeout(function () {
+                        location.href = res.url;
+                    }, 1500);
+                } else {
+                    Dolphin.notify(res.msg, 'danger');
+                }
+            }).fail(function () {
+                Dolphin.notify('服务器发生错误~', 'danger');
+            });
+            return false;
+        });
+    });
+</script>
+{/block}
